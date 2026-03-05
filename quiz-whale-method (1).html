@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DollyGirls Chatter Training — Whale Method Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #000000; --surface: #0d0d0d; --surface2: #161616; --border: #2a2a2a;
+    --accent: #ff2ecc; --accent-dim: rgba(255,46,204,0.12); --accent-glow: rgba(255,46,204,0.35);
+    --text: #ffffff; --muted: #777777; --success: #ff2ecc; --danger: #ff4466;
+    --success-dim: rgba(255,46,204,0.1); --danger-dim: rgba(255,68,102,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Nunito Sans', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; position: relative; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; top: -200px; left: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,46,204,0.08) 0%, transparent 70%); pointer-events: none; animation: drift 12s ease-in-out infinite alternate; }
+  body::after { content: ''; position: fixed; bottom: -200px; right: -200px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,46,204,0.05) 0%, transparent 70%); pointer-events: none; animation: drift2 15s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translate(0,0); } to { transform: translate(40px,30px); } }
+  @keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-30px,-40px); } }
+  .container { width: 100%; max-width: 680px; position: relative; z-index: 1; }
+  .header { text-align: center; margin-bottom: 40px; animation: fadeUp 0.6s ease both; }
+  .badge { display: inline-block; background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent); font-family: 'Nunito', sans-serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; padding: 6px 14px; border-radius: 2px; margin-bottom: 20px; }
+  h1 { font-family: 'Nunito', sans-serif; font-size: clamp(26px, 5vw, 40px); font-weight: 900; line-height: 1.1; letter-spacing: -0.5px; }
+  h1 span { color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 12px; margin-top: 10px; letter-spacing: 1px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 36px; animation: fadeUp 0.6s ease both; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .entry-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block; }
+  .entry-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; color: var(--text); font-family: 'Nunito Sans', sans-serif; font-size: 16px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 24px; }
+  .entry-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .entry-input::placeholder { color: var(--muted); }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .info-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; }
+  .info-box .val { font-family: 'Nunito', sans-serif; font-size: 22px; font-weight: 800; color: var(--accent); }
+  .info-box .lbl { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+  .btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 16px; font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+  .btn:active { transform: translateY(0); }
+  .btn-ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-ghost:hover { background: var(--accent-dim); box-shadow: none; }
+  .progress-wrap { margin-bottom: 28px; }
+  .progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .q-counter { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+  .q-counter span { color: var(--accent); font-weight: 600; }
+  .progress-bar { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; box-shadow: 0 0 8px var(--accent-glow); }
+  .section-tag { display: inline-block; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); padding: 4px 10px; border-radius: 2px; margin-bottom: 14px; }
+  .question-text { font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 700; line-height: 1.5; margin-bottom: 24px; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option { display: flex; align-items: flex-start; gap: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s; user-select: none; }
+  .option:hover:not(.locked) { border-color: var(--accent); background: var(--accent-dim); transform: translateX(4px); }
+  .option.selected { border-color: var(--accent); background: var(--accent-dim); }
+  .option.correct { border-color: var(--success); background: var(--success-dim); }
+  .option.wrong { border-color: var(--danger); background: var(--danger-dim); }
+  .option.locked { cursor: default; pointer-events: none; }
+  .opt-letter { min-width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--muted); transition: all 0.2s; flex-shrink: 0; }
+  .option.selected .opt-letter { border-color: var(--accent); color: var(--accent); }
+  .option.correct .opt-letter { border-color: var(--success); color: var(--success); background: var(--success-dim); }
+  .option.wrong .opt-letter { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+  .opt-text { font-size: 13px; line-height: 1.5; padding-top: 3px; }
+  .feedback { margin-top: 18px; padding: 14px 18px; border-radius: 8px; font-size: 12px; line-height: 1.6; display: none; animation: fadeUp 0.3s ease both; }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: var(--success-dim); border: 1px solid var(--success); color: var(--success); }
+  .feedback.wrong-fb { background: var(--danger-dim); border: 1px solid var(--danger); color: var(--danger); }
+  .nav { margin-top: 24px; }
+  .result-score { text-align: center; padding: 32px 0 24px; }
+  .score-ring { position: relative; width: 130px; height: 130px; margin: 0 auto 20px; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+  .ring-bg { stroke: var(--border); }
+  .ring-fill { transition: stroke-dashoffset 1s ease; }
+  .score-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .score-num .big { font-family: 'Nunito', sans-serif; font-size: 32px; font-weight: 800; }
+  .score-num .pct { font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+  .result-label { font-family: 'Nunito', sans-serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .result-sub { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
+  .result-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .rb-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+  .rb-box .num { font-family: 'Nunito', sans-serif; font-size: 28px; font-weight: 800; }
+  .rb-box .lbl { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+  .rb-box.pass .num { color: var(--success); }
+  .rb-box.fail .num { color: var(--danger); }
+  .sending-msg { text-align: center; font-size: 11px; color: var(--muted); margin-bottom: 16px; letter-spacing: 1px; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="badge">Whale Method — Off-Platform Strategy</div>
+    <h1><span>Dolly</span>Girls. Knowledge Quiz</h1>
+    <p class="subtitle">Identifying Whales · Moving Off-Platform · Safe Language · Transfer Protocol</p>
+  </div>
+
+  <div class="card screen active" id="screen-entry">
+    <label class="entry-label" for="tg-input">Your Telegram Username</label>
+    <input class="entry-input" id="tg-input" type="text" placeholder="@yourusername" autocomplete="off"/>
+    <div class="info-grid">
+      <div class="info-box"><div class="val">15</div><div class="lbl">Questions</div></div>
+      <div class="info-box"><div class="val">80%</div><div class="lbl">Pass Mark</div></div>
+    </div>
+    <button class="btn" onclick="startQuiz()">Begin Assessment</button>
+  </div>
+
+  <div class="card screen" id="screen-quiz">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span class="q-counter">Question <span id="q-num">1</span> of <span id="q-total">15</span></span>
+        <span class="q-counter"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="section-tag" id="section-tag"></div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-list"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="nav"><button class="btn" id="next-btn" style="display:none" onclick="nextQuestion()">Next Question →</button></div>
+  </div>
+
+  <div class="card screen" id="screen-results">
+    <div class="result-score">
+      <div class="score-ring">
+        <svg viewBox="0 0 120 120" width="130" height="130">
+          <circle class="ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+        </svg>
+        <div class="score-num">
+          <div class="big" id="score-pct">0%</div>
+          <div class="pct">SCORE</div>
+        </div>
+      </div>
+      <div class="result-label" id="result-label"></div>
+      <div class="result-sub" id="result-sub"></div>
+    </div>
+    <div class="result-breakdown">
+      <div class="rb-box pass"><div class="num" id="r-correct">0</div><div class="lbl">Correct</div></div>
+      <div class="rb-box fail"><div class="num" id="r-wrong">0</div><div class="lbl">Incorrect</div></div>
+    </div>
+    <div class="sending-msg" id="sending-msg">Saving your result...</div>
+    <button class="btn btn-ghost" onclick="retryQuiz()">Retake Quiz</button>
+  </div>
+
+</div>
+<script>
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwtD6KkKFgbk4oC2BTnQNWP6xbjUrYQp3gWt0zjGDIj3enzmR_z8dnVL38hAz9Nw0dx/exec";
+const SECTION_NAME = "Whale Method";
+const TOTAL = 15;
+
+const questions = [
+
+  {
+    section: "Identifying Whales",
+    q: "Which two types of fans should you consider moving to WhatsApp?",
+    opts: [
+      "Any fan who has been chatting for more than a week",
+      "Relationship-seeking fans with money, and massive spenders",
+      "Fans who ask to move off-platform themselves",
+      "Any fan who tips over 100 tokens"
+    ],
+    ans: 1,
+    fb: "Only two types qualify — fans who are relationship-seeking AND have money, and massive spenders. The goal is long-term relationships, not short-term fans. Never pitch this broadly."
+  },
+
+  {
+    section: "Identifying Whales",
+    q: "Which of the following is a key indicator that a fan could be a whale?",
+    opts: [
+      "They frequently ask for discounts and haggle prices",
+      "They are pushy about moving off-platform immediately without tipping",
+      "They are consistently generous, go into PVTs regularly, and seem to want a real relationship",
+      "They send a large one-off tip but never return"
+    ],
+    ans: 2,
+    fb: "Key whale indicators include: consistent spending, going into PVTs regularly, being generous for little or no reason, wanting to get to know the model beyond just sexual content, and not haggling prices. One-off tippers or price hagglers are not whales."
+  },
+
+  {
+    section: "Identifying Whales",
+    q: "A fan is generous with tips but constantly haggles over prices and pushes to move off-platform immediately without tipping. Are they a whale?",
+    opts: [
+      "Yes — their generosity with tips makes them a strong candidate",
+      "Maybe — pitch them and see how they respond",
+      "No — haggling and being pushy without tipping are red flags that disqualify them",
+      "Yes — anyone who wants to move off-platform is a whale by definition"
+    ],
+    ans: 2,
+    fb: "Haggling prices and being overly pushy to move off-platform without tipping are explicit red flags. These behaviours disqualify a fan from the whale method regardless of any other spending. Don't pitch them."
+  },
+
+  {
+    section: "Identifying Whales",
+    q: "What is the long-term goal of the whale method?",
+    opts: [
+      "Get as many fans as possible onto WhatsApp to increase volume",
+      "Build a strong real relationship and lead the fan to covering large expenses like rent, hair, and nails",
+      "Move fans off-platform so they spend less on tokens and more on direct payments",
+      "Create a shortcut to bigger tips without using the platform"
+    ],
+    ans: 1,
+    fb: "The whale method is about building genuine long-term relationships. The goal is to lead fans to making large, meaningful contributions — rent, hair, nails, big payments — through a strong connection. It is never about volume or short-term wins."
+  },
+
+  {
+    section: "Safe Language",
+    q: "Why must you never use the words 'WhatsApp' or 'off-platform' in chat?",
+    opts: [
+      "It sounds unprofessional and ruins the fantasy",
+      "Platform bots and checks can detect these words and lead to an account ban",
+      "Fans find it off-putting and will stop spending",
+      "It breaks the terms of the whale method transfer process"
+    ],
+    ans: 1,
+    fb: "Platform bots and manual checks scan for trigger words like 'WhatsApp' and 'off-platform'. Using them risks an account ban — which is catastrophic. Always use 'WA' and never say 'off-platform' or anything that could be flagged."
+  },
+
+  {
+    section: "Safe Language",
+    q: "What is the correct way to ask a fan for their WhatsApp number?",
+    opts: [
+      "\"Can I get your WhatsApp number so we can chat off-platform?\"",
+      "\"What's your number? I want to move us to WhatsApp.\"",
+      "\"Give me ur WA\" or \"No, what ur WA\" — never using 'your', 'number', or 'WhatsApp'",
+      "\"Send me your contact details and I'll add you.\""
+    ],
+    ans: 2,
+    fb: "Never use the word 'WhatsApp' or 'your number'. Approved phrasing includes 'give me ur WA' or 'no, what ur WA'. This avoids detection by avoiding the words 'your', 'number', and 'WhatsApp' entirely."
+  },
+
+  {
+    section: "Safe Language",
+    q: "A fan reports the chat after you pitched them. What is the potential consequence?",
+    opts: [
+      "The fan gets banned from the platform",
+      "You get a warning from the WA manager",
+      "The model's account could be banned",
+      "Nothing — reports are rarely reviewed"
+    ],
+    ans: 2,
+    fb: "If a fan reports the chat after being pitched, the model's account can be banned. This is why it is critical to only pitch fans you are confident about. A wrong pitch doesn't just fail — it can end the account entirely."
+  },
+
+  {
+    section: "Pitching Strategy",
+    q: "What is the safest way to lead a fan towards moving to WA?",
+    opts: [
+      "Directly ask them if they want to move off-platform as soon as they tip big",
+      "Hint that you want to get closer and let them bring it up themselves — funnel them to asking you",
+      "Tell them the model wants a deeper connection and ask for their number",
+      "Wait until they have tipped 999 tokens, then pitch immediately"
+    ],
+    ans: 1,
+    fb: "The safest approach is to hint that you want a deeper, more real connection — let the fan bring up moving to WA themselves. This reduces ban risk significantly since the fan is initiating. Never pitch directly without letting the fan feel they came to the idea."
+  },
+
+  {
+    section: "Pitching Strategy",
+    q: "When is it acceptable to move a fan to WA for free (without the 999 token tip)?",
+    opts: [
+      "If they have been chatting for more than a month",
+      "Never — the tip is always required, no exceptions",
+      "If they have already spent a lot consistently — but only after asking a manager first",
+      "If the fan asks nicely and seems genuine"
+    ],
+    ans: 2,
+    fb: "Free transfers are only allowed for fans who have already spent a lot consistently. Even then, you must ask a manager before proceeding. Never make this call alone — always get approval."
+  },
+
+  {
+    section: "Pitching Strategy",
+    q: "How should the whale method always be positioned to the fan?",
+    opts: [
+      "As a special reward for their spending",
+      "As a way to get to know each other on a deeper level, like a real relationship",
+      "As an exclusive invite only available to top tippers",
+      "As a more private and secure way to continue chatting"
+    ],
+    ans: 1,
+    fb: "Always frame the whale method as wanting to build a deeper, more real relationship — not as a transaction or reward. This keeps the emotional connection genuine and makes the fan feel valued rather than sold to."
+  },
+
+  {
+    section: "Pitching Strategy",
+    q: "You think a fan might be suitable but you're not fully sure. What should you do?",
+    opts: [
+      "Pitch them anyway — the worst they can do is say no",
+      "Ask another chatter for their opinion",
+      "Do not pitch them — only pitch fans you are confident about, as a wrong pitch risks an account ban",
+      "Pitch them softly and see how they react before going further"
+    ],
+    ans: 2,
+    fb: "If you're unsure, don't pitch. Pitching the wrong fan risks an account ban if they report the chat. Only proceed when you are confident the fan is a genuine whale. The risk is not worth the uncertainty."
+  },
+
+  {
+    section: "Transfer Protocol",
+    q: "What is the tip requirement before transferring a fan via the whale method?",
+    opts: [
+      "500 tokens",
+      "Any amount they choose",
+      "999 tokens",
+      "There is no tip requirement"
+    ],
+    ans: 2,
+    fb: "The standard requirement is 999 tokens before transferring. The only exception is for fans who have already spent consistently and significantly — and even then, manager approval is required first."
+  },
+
+  {
+    section: "Transfer Protocol",
+    q: "What must you include in the fan's notes when transferring a whale?",
+    opts: [
+      "Their tip amount and the date they first joined",
+      "\"WHALE METHOD\" in the notes section so the WA manager knows the relationship context",
+      "A summary of every conversation you've had with them",
+      "Their platform username and the model's name"
+    ],
+    ans: 1,
+    fb: "Always add 'WHALE METHOD' in the notes section of the fan during transfer. This ensures the WhatsApp manager knows the relationship-building context and doesn't accidentally damage it by treating them like a cold contact."
+  },
+
+  {
+    section: "Transfer Protocol",
+    q: "After completing a whale transfer, what must you do in Discord?",
+    opts: [
+      "Wait for the WA manager to message you first",
+      "Post in the general channel and wait for confirmation",
+      "Message the whale method channel with all requirements and the fan's WA number, and @ the WhatsApp manager",
+      "Send the fan's details directly to the model via DM"
+    ],
+    ans: 2,
+    fb: "After a transfer, post all requirements plus the fan's WhatsApp number into the model's whale method Discord channel and @ the WhatsApp manager directly. The transfer is marked 'DONE' once they've been reached out to. If the WA manager isn't available, tell the fan you'll message them after the stream."
+  },
+
+  {
+    section: "Transfer Protocol",
+    q: "What is the weekly target for the whale method?",
+    opts: [
+      "1–2 whales per week",
+      "As many as possible — there is no cap",
+      "5–10 solid whales moved to WA per week",
+      "20+ whales per week across all chatters"
+    ],
+    ans: 2,
+    fb: "The starting goal is 5–10 solid whales moved to WA per week. Quality matters — these must be genuine, suitable fans, not rushed or forced transfers that could risk bans or damage relationships."
+  }
+
+];
+
+// ── STATE
+let telegramName = "", currentQ = 0, score = 0, answered = false, shuffled = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  const raw = document.getElementById('tg-input').value.trim();
+  if (!raw) { document.getElementById('tg-input').focus(); return; }
+  telegramName = raw.startsWith('@') ? raw : '@' + raw;
+  shuffled = shuffle(questions);
+  currentQ = 0; score = 0;
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+document.getElementById('tg-input').addEventListener('keydown', e => { if (e.key === 'Enter') startQuiz(); });
+
+function renderQuestion() {
+  answered = false;
+  const q = shuffled[currentQ];
+  const letters = ['A','B','C','D'];
+  document.getElementById('q-num').textContent = currentQ + 1;
+  document.getElementById('section-tag').textContent = q.section;
+  document.getElementById('question-text').textContent = q.q;
+  document.getElementById('progress-fill').style.width = ((currentQ / TOTAL) * 100) + '%';
+  document.getElementById('next-btn').style.display = 'none';
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback'; fb.textContent = '';
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<div class="opt-letter">${letters[i]}</div><div class="opt-text">${opt}</div>`;
+    div.onclick = () => selectAnswer(i);
+    list.appendChild(div);
+  });
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = shuffled[currentQ];
+  const options = document.querySelectorAll('.option');
+  options.forEach(o => o.classList.add('locked'));
+  options[idx].classList.add('selected');
+  const fb = document.getElementById('feedback');
+  if (idx === q.ans) {
+    score++;
+    options[idx].classList.add('correct');
+    fb.className = 'feedback correct-fb show';
+    fb.textContent = '✓ Correct — ' + q.fb;
+  } else {
+    options[idx].classList.add('wrong');
+    options[q.ans].classList.add('correct');
+    fb.className = 'feedback wrong-fb show';
+    fb.textContent = '✗ Incorrect — ' + q.fb;
+  }
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ < TOTAL) { renderQuestion(); } else { showResults(); }
+}
+
+function showResults() {
+  showScreen('screen-results');
+  const pct = Math.round((score / TOTAL) * 100);
+  const passed = pct >= 80;
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-pct').style.color = passed ? 'var(--success)' : 'var(--danger)';
+  document.getElementById('r-correct').textContent = score;
+  document.getElementById('r-wrong').textContent = TOTAL - score;
+  document.getElementById('result-label').textContent = passed ? '🎉 You Passed!' : '❌ Not Quite';
+  document.getElementById('result-label').style.color = passed ? 'var(--success)' : 'var(--danger)';
+  document.getElementById('result-sub').textContent = passed
+    ? `Great work, ${telegramName}. You're cleared to move forward.`
+    : `${telegramName}, you needed 80% to pass. Review the material and try again.`;
+  const ring = document.getElementById('ring-fill');
+  ring.style.stroke = passed ? 'var(--success)' : 'var(--danger)';
+  setTimeout(() => { ring.style.strokeDashoffset = 326.7 - (326.7 * pct / 100); }, 100);
+  sendToSheets(telegramName, pct, score, passed);
+}
+
+function retryQuiz() {
+  shuffled = shuffle(questions);
+  currentQ = 0; score = 0;
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function sendToSheets(telegram, pct, correct, passed) {
+  const msg = document.getElementById('sending-msg');
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        telegram, section: SECTION_NAME, score: pct,
+        correct, wrong: TOTAL - correct,
+        passed: passed ? "PASS" : "FAIL",
+        timestamp: new Date().toISOString()
+      })
+    });
+    msg.textContent = "✓ Result saved successfully.";
+  } catch (e) {
+    msg.textContent = "⚠ Could not save result — check webhook URL.";
+  }
+}
+</script>
+</body>
+</html>
